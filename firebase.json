@@ -1,3 +1,17 @@
+
 {
-  "//": "Конфигурация хостинга Firebase была удалена по вашему запросу."
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
 }
