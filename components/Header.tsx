@@ -6,28 +6,27 @@ import { SunIcon, MoonIcon } from './icons/Icons';
 interface HeaderProps {
   isDarkMode: boolean;
   toggleTheme: () => void;
+  navigate: (path: string) => void;
 }
 
-const navigate = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme, navigate }) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
     e.preventDefault();
-    window.history.pushState({}, '', path);
-    const navEvent = new Event('pushstate');
-    window.dispatchEvent(navEvent);
-};
+    navigate(path);
+  };
 
-const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm dark:shadow-gray-800 transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <a href="/" onClick={(e) => navigate(e, '/')} className="flex items-center space-x-2">
+            <a href="/" onClick={(e) => handleNavClick(e, '/')} className="flex items-center space-x-2">
               <Logo className="h-8 w-auto text-brand-primary" />
               <span className="font-bold text-xl text-brand-text-light dark:text-brand-text-dark hidden sm:inline">Clearway Studying</span>
             </a>
           </div>
           <nav className="hidden md:flex md:items-center md:space-x-8">
-            <a href="/cells" onClick={(e) => navigate(e, '/cells')} className="text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-light transition-colors">Клетки</a>
+            <a href="/cells" onClick={(e) => handleNavClick(e, '/cells')} className="text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-light transition-colors">Клетки</a>
             <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-light transition-colors">Clearway AI</a>
             <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary-light transition-colors">Дневник</a>
           </nav>

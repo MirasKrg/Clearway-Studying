@@ -28,23 +28,26 @@ const App: React.FC = () => {
     }
   }, [isDarkMode]);
 
+  // Handle browser back/forward buttons
   useEffect(() => {
     const onLocationChange = () => {
       setCurrentPath(window.location.pathname);
     };
-    // popstate for browser back/forward buttons
     window.addEventListener('popstate', onLocationChange);
-    // custom event for programmatic navigation
-    window.addEventListener('pushstate', onLocationChange);
 
     return () => {
       window.removeEventListener('popstate', onLocationChange);
-      window.removeEventListener('pushstate', onLocationChange);
     };
   }, []);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
+  };
+  
+  // Centralized navigation function
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
   };
 
   const renderPage = () => {
@@ -60,7 +63,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen font-sans relative">
       <AnimatedBackground isDarkMode={isDarkMode} />
-      <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+      <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} navigate={navigate} />
       <main className="relative z-10 pt-20"> {/* Add padding for fixed header */}
         {renderPage()}
       </main>
