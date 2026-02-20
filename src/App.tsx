@@ -5,8 +5,13 @@ import Footer from './components/Footer';
 import AnimatedBackground from './components/AnimatedBackground';
 import LandingPage from './pages/LandingPage';
 import CellsPage from './pages/CellsPage';
+import AuthPage from './pages/AuthPage';
+import ProfilePage from './pages/ProfilePage';
+import { auth } from './firebase.config';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark' || 
@@ -27,6 +32,15 @@ const App: React.FC = () => {
       localStorage.setItem('theme', 'light');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+      });
+      return () => unsubscribe();
+    }
+  }, []);
 
   // Handle browser back/forward buttons
   useEffect(() => {
@@ -54,6 +68,10 @@ const App: React.FC = () => {
     switch (currentPath) {
       case '/cells':
         return <CellsPage />;
+      case '/auth':
+        return <AuthPage />;
+      case '/profile':
+        return user ? <ProfilePage /> : <LandingPage isDarkMode={isDarkMode} />;
       case '/':
       default:
         return <LandingPage isDarkMode={isDarkMode} />;
@@ -63,7 +81,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen font-sans relative">
       <AnimatedBackground isDarkMode={isDarkMode} />
-      <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} navigate={navigate} />
+      <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} navigate={navigate} user={user} />
       <main className="relative z-10 pt-20"> {/* Add padding for fixed header */}
         {renderPage()}
       </main>

@@ -1,15 +1,27 @@
 
 import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Logo } from './icons/Logo';
 import { SunIcon, MoonIcon } from './icons/Icons';
+import { User } from 'firebase/auth';
+import { auth } from '../firebase.config';
+import { generateAvatar } from '../utils/avatar';
 
 interface HeaderProps {
   isDarkMode: boolean;
   toggleTheme: () => void;
   navigate: (path: string) => void;
+  user: User | null;
 }
 
-const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme, navigate }) => {
+const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme, navigate, user }) => {
+  const [avatar, setAvatar] = useState('');
+
+  useEffect(() => {
+    if (user && user.email) {
+      setAvatar(generateAvatar(user.email));
+    }
+  }, [user]);
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
     e.preventDefault();
     navigate(path);
@@ -42,9 +54,25 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme, navigate }) =>
                 </div>
               </div>
             </label>
-            <div className="hidden sm:flex items-center space-x-2">
-                 <button className="px-4 py-2 text-sm font-medium text-brand-primary border border-brand-primary rounded-md hover:bg-brand-primary/10 transition-colors">Войти</button>
-                 <button className="px-4 py-2 text-sm font-medium text-white bg-brand-primary rounded-md hover:bg-brand-primary-dark transition-colors">Регистрация</button>
+            <div className="hidden sm:flex items-center space-x-4">
+              {user ? (
+                <div className="relative flex items-center space-x-2">
+                  <button onClick={() => navigate('/profile')} className="block w-10 h-10 rounded-full overflow-hidden border-2 border-brand-primary">
+                    <img src={avatar} alt="User Avatar" className="w-full h-full object-cover" />
+                  </button>
+                  <button 
+                    onClick={() => auth && auth.signOut()} 
+                    className="px-4 py-2 text-sm font-medium text-brand-primary border border-brand-primary rounded-md hover:bg-brand-primary/10 transition-colors"
+                  >
+                    Выйти
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <button onClick={() => navigate('/auth')} className="px-4 py-2 text-sm font-medium text-brand-primary border border-brand-primary rounded-md hover:bg-brand-primary/10 transition-colors">Войти</button>
+                  <button onClick={() => navigate('/auth')} className="px-4 py-2 text-sm font-medium text-white bg-brand-primary rounded-md hover:bg-brand-primary-dark transition-colors">Регистрация</button>
+                </div>
+              )}
             </div>
           </div>
         </div>
